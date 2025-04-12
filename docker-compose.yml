@@ -15,4 +15,4 @@ services:
     environment:
       - PORT=5000
       - RENDER=true
-    command: python main.py
+    command: python index.py
