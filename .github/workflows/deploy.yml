@@ -3,29 +3,25 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up SSH key
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.EC2_KEY }}
-
-    - name: Copy Docker Compose and other necessary files
       run: |
-        scp -i ${{ secrets.EC2_KEY }} -o StrictHostKeyChecking=no -r ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
+        echo "${{ secrets.EC2_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+
+    - name: Copy files to EC2 instance
+      run: |
+        scp -i private_key.pem -o StrictHostKeyChecking=no -r ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
 
     - name: SSH into EC2 and deploy
       run: |
-        ssh -i ${{ secrets.EC2_KEY }} -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-          cd /home/ubuntu/app
-          docker-compose down
-          docker-compose up -d --build
-        EOF
+        ssh -i private_key.pem ubuntu@${{ secrets.EC2_HOST }} 'bash -s' < ./deploy.sh
