@@ -11,3 +11,6 @@ venv.bak/
 
 # Python cache files
 __pycache__/
+
+bot-secret
+bot-secret.pub
