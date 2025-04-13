@@ -15,13 +15,14 @@ jobs:
 
     - name: Set up SSH key
       run: |
-        echo "${{ secrets.EC2_KEY }}" > private_key.pem
-        chmod 600 private_key.pem
+        echo "${{ secrets.EC2_KEY }}" > bot-secret.pem
+        chmod 600 bot-secret.pem
+
 
     - name: Copy files to EC2 instance
       run: |
-        scp -i private_key.pem -o StrictHostKeyChecking=no -r ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
+        scp -i bot-secret.pem -o StrictHostKeyChecking=no -r ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/app
 
     - name: SSH into EC2 and deploy
       run: |
-        ssh -i private_key.pem ubuntu@${{ secrets.EC2_HOST }} 'bash -s' < ./deploy.sh
+        ssh -i bot-secret.pem ubuntu@${{ secrets.EC2_HOST }} 'bash -s' < ./deploy.sh
