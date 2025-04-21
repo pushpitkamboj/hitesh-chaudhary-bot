@@ -119,7 +119,7 @@ def webhook():
 
 if __name__ == "__main__":
     # Check if we're running on Render or locally
-    is_render = "RENDER" in os.environ
+    is_render = os.getenv("RENDER", "").lower() == "true"
     
     if not is_render:
         # Running locally - use ngrok
